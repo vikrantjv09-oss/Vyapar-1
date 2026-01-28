@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether MSME | The Intelligence OS for Local Business</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand: #4f46e5;
+            --brand-dark: #3730a3;
+            --brand-light: #e0e7ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Gateway Screen --- */
+        #gatewayScreen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .gateway-header {
+            margin-bottom: 3rem;
+        }
+
+        .gateway-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            margin-bottom: 0.5rem;
+        }
+
+        .gateway-header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 340px);
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .role-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .role-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            color: var(--brand);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .role-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .role-card p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* --- App Shell --- */
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--brand);
+            letter-spacing: -0.02em;
+            cursor: pointer;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--brand);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            aside {
+                order: -1;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Hero / Problem Section */
+        .hero-banner {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .hero-banner h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-banner p {
+            font-size: 1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .gap-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .gap-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gap-val {
+            font-size: 2.5rem;
+            font-weight: 900;
+            display: block;
+        }
+
+        .gap-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        /* Dashboard UI */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--brand);
+        }
+
+        /* Voice Assistant UI */
+        .voice-hub {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: #f8fafc;
+            border: 2px dashed var(--border);
+            border-radius: 24px;
+        }
+
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--brand);
+            color: white;
+            border: 6px solid #e0e7ff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .mic-btn.active {
+            background: var(--danger);
+            animation: mic-pulse 1.5s infinite;
+        }
+
+        @keyframes mic-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .input-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 2rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--brand);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        /* Customer Chat */
+        .chat-frame {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-log {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .msg.ai {
+            background: #f1f5f9;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg.user {
+            background: var(--brand);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Sidebar Insights */
+        .insight-pill {
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .insight-pill h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #9a3412;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .insight-pill p {
+            font-size: 0.9rem;
+            color: #7c2d12;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status-tag {
+            background: #dcfce7;
+            color: #166534;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 99px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ROLE GATEWAY -->
+    <div id="gatewayScreen">
+        <div class="gateway-header">
+            <h1>AETHER</h1>
+            <p id="txtGatewaySub">Empowering the backbone of the economy. Bridge the 6.5Cr MSME technology gap with our
+                voice-first Intelligence OS.</p>
+        </div>
+
+        <div class="role-cards">
+            <div class="role-card" onclick="startSession('owner')">
+                <div class="role-icon">🏗️</div>
+                <div>
+                    <h3>Business Owner</h3>
+                    <p>Command center, ledger tracking, and AI strategic growth.</p>
+                </div>
+            </div>
+            <div class="role-card" onclick="startSession('customer')">
+                <div class="role-icon">👋</div>
+                <div>
+                    <h3>Store Customer</h3>
+                    <p>Browse products, check availability, and chat with AI reception.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP SHELL -->
+    <div class="app-shell hidden" id="appShell">
+        <header>
+            <div class="brand-box" onclick="location.reload()">
+                <div class="brand-logo">A</div>
+                AETHER <span style="font-weight: 300; opacity: 0.6;">| <span id="portalName">MSME OS</span></span>
+            </div>
+
+            <div class="user-actions">
+                <select id="langSelect" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem;" onchange="updateLocale()">
+                    <option value="en-US">English</option>
+                    <option value="hi-IN">Hindi (हिंदी)</option>
+                    <option value="es-ES">Spanish</option>
+                </select>
+                <div class="status-tag">Live Intelligence</div>
+            </div>
+        </header>
+
+        <div class="container">
+            <main>
+                <!-- OWNER PORTAL -->
+                <div id="ownerPortal">
+                    <section class="hero-banner">
+                        <h2 id="txtProblemTitle">The MSME Intelligence Gap</h2>
+                        <p id="txtProblemDesc">6.5 Crore+ MSMEs are registered in India, yet less than 40% utilize AI to
+                            track daily operations. Aether provides the data-driven edge you need to grow and upgrade
+                            your store systematically.</p>
+                        <div class="gap-stats">
+                            <div class="gap-item">
+                                <span class="gap-label">Registered MSMEs</span>
+                                <span class="gap-val">6.5 Cr+</span>
+                            </div>
+                            <div class="gap-item">
+                                <span class="gap-label">AI Adoption Gap</span>
+                                <span class="gap-val" style="color: var(--warning);">&lt;40%</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="label" id="lblSales">Revenue (MTD)</span>
+                            <span class="val">₹<span id="valSales">1,24,500</span></span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="label" id="lblStock">Inventory Count</span>
+                            <span class="val" id="valStock">420</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="label" id="lblGrowth">Efficiency Score</span>
+                            <span class="val">92%</span>
+                        </div>
+                    </div>
+
+                    <div class="voice-hub">
+                        <button class="mic-btn" id="ownerMic" onclick="triggerVoice('ledger')">🎤</button>
+                        <h3 id="txtStatus">Assistant Ready</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;" id="txtHint">"Sold
+                            5 apples" | "Add 50 soaps to stock"</p>
+
+                        <div class="input-bar">
+                            <input type="text" id="manualLog" placeholder="Log a transaction or ask a question...">
+                            <button class="btn btn-primary" onclick="handleManualLog()" id="btnProcess">Process</button>
+                        </div>
+                        <div id="logFeedback"
+                            style="margin-top: 1.5rem; color: var(--brand); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600;">
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 2rem;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                            <h3 id="lblDiary">Business Diary</h3>
+                            <button class="btn btn-secondary" onclick="triggerVoice('diary')">Neural Record</button>
+                        </div>
+                        <div id="diaryStack">
+                            <p style="text-align:center; color: var(--text-muted); padding: 1.5rem;" id="txtNoDiary">No
+                                daily entries found. Record your thoughts to summarize the day.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER PORTAL -->
+                <div id="customerPortal" class="hidden">
+                    <div class="card chat-frame">
+                        <div
+                            style="border-bottom: 1px solid var(--border); padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 id="lblCustHeader">Digital Storefront</h2>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);" id="lblCustSub">Your personal
+                                    shopping assistant.</p>
+                            </div>
+                            <div class="status-tag">AI Active</div>
+                        </div>
+
+                        <div class="chat-log" id="customerChat">
+                            <div class="msg ai" id="txtAiWelcome">Welcome! I'm the Aether Store Assistant. I know
+                                everything about our current stock, prices, and store hours. How can I help you today?
+                            </div>
+                        </div>
+
+                        <div class="input-bar" style="padding: 1.5rem; border-top: 1px solid var(--border);">
+                            <button class="btn btn-secondary" style="padding: 12px;" onclick="triggerVoice('customer')">🎤</button>
+                            <input type="text" id="customerInput" placeholder="Ask about products or availability...">
+                            <button class="btn btn-primary" onclick="sendCustomerMsg()" id="btnSend">Ask Assistant</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <aside id="ownerSidebar">
+                <section class="card">
+                    <h3
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;">
+                        Strategic Assistant</h3>
+                    <div id="insightBox">
+                        <div class="insight-pill">
+                            <h4 id="lblTipTitle">Growth Opportunity</h4>
+                            <p id="lblTipDesc">Analyze your latest sales data to receive automated store upgrade
+                                recommendations.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; margin-top: 1rem;" onclick="generateInsights()" id="btnAnalyze">Analyze Trends</button>
+                </section>
+
+                <section class="card">
+                    <h3
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;">
+                        Live Ledger</h3>
+                    <div id="activityFeed" style="display:flex; flex-direction:column; gap: 12px;">
+                        <p style="text-align:center; font-size: 0.8rem; color: var(--text-muted); padding: 1rem;">Stream
+                            live. Waiting for data...</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+      "imports": {
+        "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
+      }
+    }
+    </script>
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        // Translation Engine
+        const textAssets = {
+            'en-US': {
+                gatewaySub: "Empowering the backbone of the economy. Bridge the 6.5Cr MSME technology gap with our voice-first Intelligence OS.",
+                problemTitle: "The MSME Intelligence Gap",
+                problemDesc: "6.5 Crore+ MSMEs are registered in India, yet less than 40% utilize AI to track daily operations. Aether provides the edge to grow.",
+                statusReady: "Assistant Ready", statusListening: "Listening...",
+                hint: '"Sold 5 apples" | "Add 50 soaps"', btnProcess: "Process",
+                diary: "Business Diary", noDiary: "No daily entries found. Record your thoughts.",
+                recHeader: "Digital Storefront", recSub: "Your personal shopping assistant.",
+                aiWelcome: "Welcome! I'm the Aether Store Assistant. I know everything about our stock and hours. How can I help you?",
+                tipTitle: "Growth Opportunity", btnAnalyze: "Analyze Trends"
+            },
+            'hi-IN': {
+                gatewaySub: "अर्थव्यवस्था की रीढ़ को सशक्त बनाना। हमारे वॉयस-फर्स्ट इंटेलिजेंस ओएस के साथ 6.5 करोड़ MSME तकनीक के अंतर को पाटें।",
+                problemTitle: "MSME इंटेलिजेंस गैप",
+                problemDesc: "भारत में 6.5 करोड़+ MSME पंजीकृत हैं, फिर भी 40% से कम दैनिक संचालन के लिए AI का उपयोग करते हैं। Aether आपको आगे बढ़ने में मदद करता है।",
+                statusReady: "सहायक तैयार है", statusListening: "सुन रहा हूँ...",
+                hint: '"5 सेब बेचे" | "स्टॉक में 50 साबुन जोड़ें"', btnProcess: "प्रोसेस करें",
+                diary: "व्यापार डायरी", noDiary: "कोई प्रविष्टि नहीं मिली। रिकॉर्ड करना शुरू करें।",
+                recHeader: "डिजिटल स्टोरफ्रंट", recSub: "आपका निजी शॉपिंग सहायक।",
+                aiWelcome: "नमस्ते! मैं Aether स्टोर सहायक हूँ। मुझे स्टॉक और समय के बारे में सब पता है। मैं आपकी कैसे मदद कर सकता हूँ?",
+                tipTitle: "विकास का अवसर", btnAnalyze: "ट्रेंड्स का विश्लेषण"
+            }
+        };
+
+        let currentLocale = 'en-US';
+        let revenue = 124500;
+        let stock = 420;
+        let isListening = false;
+        let listenCtx = null;
+
+        const ai = new GoogleGenAI({ apiKey: (typeof process !== 'undefined') ? process.env.API_KEY : "" });
+
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const reco = SpeechRec ? new SpeechRec() : null;
+
+        window.startSession = (role) => {
+            document.getElementById('gatewayScreen').classList.add('hidden');
+            document.getElementById('appShell').classList.remove('hidden');
+            
+            if(role === 'owner') {
+                document.getElementById('ownerPortal').classList.remove('hidden');
+                document.getElementById('customerPortal').classList.add('hidden');
+                document.getElementById('ownerSidebar').classList.remove('hidden');
+                document.getElementById('portalName').innerText = "Business Command";
+            } else {
+                document.getElementById('ownerPortal').classList.add('hidden');
+                document.getElementById('customerPortal').classList.remove('hidden');
+                document.getElementById('ownerSidebar').classList.add('hidden');
+                document.getElementById('portalName').innerText = "Digital Store";
+            }
+            updateLocale();
+        };
+
+        window.updateLocale = () => {
+            currentLocale = document.getElementById('langSelect').value;
+            const t = textAssets[currentLocale] || textAssets['en-US'];
+            
+            // Apply text
+            const safeSet = (id, key) => { const el = document.getElementById(id); if(el) el.innerText = t[key]; };
+            safeSet('txtGatewaySub', 'gatewaySub');
+            safeSet('txtProblemTitle', 'problemTitle');
+            safeSet('txtProblemDesc', 'problemDesc');
+            safeSet('txtStatus', isListening ? 'statusListening' : 'statusReady');
+            safeSet('txtHint', 'hint');
+            safeSet('lblDiary', 'diary');
+            safeSet('txtNoDiary', 'noDiary');
+            safeSet('lblCustHeader', 'recHeader');
+            safeSet('lblCustSub', 'recSub');
+            safeSet('txtAiWelcome', 'aiWelcome');
+            safeSet('lblTipTitle', 'tipTitle');
+            safeSet('btnAnalyze', 'btnAnalyze');
+
+            if(reco) reco.lang = currentLocale;
+        };
+
+        if (reco) {
+            reco.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                if(listenCtx === 'ledger') processLedger(text);
+                else if(listenCtx === 'diary') processDiary(text);
+                else if(listenCtx === 'customer') {
+                    document.getElementById('customerInput').value = text;
+                    sendCustomerMsg();
+                }
+            };
+            reco.onend = () => {
+                isListening = false;
+                document.getElementById('ownerMic').classList.remove('active');
+                updateLocale();
+            };
+        }
+
+        window.triggerVoice = (ctx) => {
+            if(!reco) return alert("Speech API not available.");
+            if(isListening) { reco.stop(); return; }
+            listenCtx = ctx;
+            isListening = true;
+            document.getElementById('ownerMic').classList.add('active');
+            reco.start();
+            updateLocale();
+        };
+
+        window.handleManualLog = () => {
+            const input = document.getElementById('manualLog');
+            if(input.value) {
+                processLedger(input.value);
+                input.value = "";
+            }
+        };
+
+        async function processLedger(text) {
+            const feedback = document.getElementById('logFeedback');
+            feedback.innerText = ">> SYNCING DATA...";
+            try {
+                const prompt = `Convert this business action into ledger data: "${text}". 
+                Output JSON ONLY: {"type": "sale"|"stock", "item": "string", "qty": number, "price": number}`;
+                const res = await ai.models.generateContent({ model: 'gemini-3-flash-preview', contents: prompt });
+                const data = JSON.parse(res.text.trim());
+                
+                if(data.type === 'sale') {
+                    revenue += (data.qty * (data.price || 10));
+                    stock -= data.qty;
+                    addActivity(`SOLD: ${data.item} x${data.qty}`, 'sale');
+                } else {
+                    stock += data.qty;
+                    addActivity(`ADDED: ${data.item} x${data.qty}`, 'stock');
+                }
+                
+                document.getElementById('valSales').innerText = revenue.toLocaleString();
+                document.getElementById('valStock').innerText = stock;
+                feedback.innerText = `>> SUCCESS: ${data.type.toUpperCase()} VERIFIED.`;
+            } catch (e) { feedback.innerText = ">> ERROR: RETRY IN PLAIN SPEECH."; }
+        }
+
+        async function processDiary(text) {
+            const stack = document.getElementById('diaryStack');
+            if(stack.innerHTML.includes('No daily')) stack.innerHTML = '';
+            const entry = document.createElement('div');
+            entry.className = 'card';
+            entry.style.background = "#f5f3ff";
+            entry.innerText = "AI Summarizing...";
+            stack.prepend(entry);
+
+            try {
+                const res = await ai.models.generateContent({
+                    model: 'gemini-3-flash-preview',
+                    contents: `Write a 2-bullet summary for this business journal entry: "${text}"`
+                });
+                entry.innerHTML = `<div style="font-size:0.7rem; color:var(--brand); margin-bottom:4px;">${new Date().toLocaleTimeString()}</div>${res.text}`;
+            } catch (e) { entry.innerText = text; }
+        }
+
+        window.sendCustomerMsg = async () => {
+            const input = document.getElementById('customerInput');
+            const chat = document.getElementById('customerChat');
+            if(!input.value) return;
+
+            chat.innerHTML += `<div class="msg user">${input.value}</div>`;
+            const q = input.value;
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
+
+            try {
+                const res = await ai.models.generateContent({
+                    model: 'gemini-3-flash-preview',
+                    contents: q,
+                    config: { systemInstruction: `You are the AI receptionist for Aether Store. Current inventory: ${stock} units. Be helpful and professional. Reply in ${currentLocale}.` }
+                });
+                chat.innerHTML += `<div class="msg ai">${res.text}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            } catch (e) { chat.innerHTML += `<div class="msg ai">I am having trouble checking the store records. Please try again.</div>`; }
+        };
+
+        window.generateInsights = async () => {
+            const box = document.getElementById('insightBox');
+            box.innerHTML = `<div class="insight-pill"><h4>Analyzing...</h4><p>Generating growth strategies based on current ledger.</p></div>`;
+            try {
+                const res = await ai.models.generateContent({
+                    model: 'gemini-3-flash-preview',
+                    contents: `Revenue ${revenue}, Stock ${stock}. Give 1 specific operational tip and 1 store upgrade suggestion for an MSME.`,
+                    config: { systemInstruction: `Tone: Enterprise Strategic. Language: ${currentLocale}.` }
+                });
+                box.innerHTML = `<div class="insight-pill"><h4>Aether Intelligence</h4><p>${res.text}</p></div>`;
+            } catch (e) { box.innerHTML = `<div class="insight-pill"><h4>Notice</h4><p>AI Engine offline. Check credentials.</p></div>`; }
+        };
+
+        function addActivity(msg, type) {
+            const feed = document.getElementById('activityFeed');
+            if(feed.innerHTML.includes('Stream live')) feed.innerHTML = '';
+            const item = document.createElement('div');
+            item.style.display = 'flex';
+            item.style.justifyContent = 'space-between';
+            item.style.fontSize = '0.85rem';
+            item.style.paddingBottom = '8px';
+            item.style.borderBottom = '1px solid var(--border)';
+            item.innerHTML = `<span style="color:${type==='sale'?'var(--danger)':'var(--success)'}; font-weight:600;">${msg}</span><span style="color:var(--text-muted); font-size:0.7rem;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>`;
+            feed.prepend(item);
+        }
+
+        updateLocale();
+    </script>
+</body>
+
+</html>
